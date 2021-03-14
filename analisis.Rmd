@@ -1,0 +1,190 @@
+---
+title: "Menganalisis Gambar Dengan EBImage pada RStudio"
+author: "Firyal Nabila Zalfa <br> UIN Maulana Malik Ibrahim Malang"
+date: "14 Maret 2021" 
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    number_section: false
+    highlight: default
+---
+
+Kali ini kita akan menganalisis sebuah gambar dengan package library EBImage di RStudio.
+
+# What is EBImage?
+EBImage menyediakan fungsionalitas untuk pemrosesan dan analisis gambar. Dalam konteks pengujian seluler berbasis mikroskop (high-throughput). Hal ini memungkinkan otomatisasi tugas tersebut menggunakan bahasa pemrograman R dan memfasilitasi penggunaan alat lain di R untuk pemrosesan sinyal, pemodelan statistik, pembelajaran mesin, dan visualisasi dengan data gambar.
+
+>> <br> untuk memulainya klik Analisis Gambar.
+
+# Analisis Gambar
+Sebelum kita mulai, pastikan dulu kita sudah menginstal package EBImage di RStudio kita. Untuk menginstalnya kalian bisa mengikuti kode dibawah ini.
+
+## Instal package
+    if(!requireNamespace("BiocManager", quietly = TRUE))
+      install.packages("BiocManager")
+      BiocManager::install("EbImage")
+
+### Panggil package
+Lalu kita memanggil library EBImage untuk memastikan bahwa package EBImage sudah terpasang di RStudio. Jika tidak menampilkan apa-apa/kosong itu menandakan bahwa package EBImage sudah siap/terpasang di RStudio kita.
+```{r}
+library(EBImage)
+```
+
+## Reading Image
+Untuk mengimport gambar pastikan bahwa lokasi gambar yang ada pada device kita sesuai, dan ubah tanda \ menjadi /.
+<br> Untuk membaca gambar menggunakan readImage() dan masukan lokasi gambar dan nama gambar. Dan jangan lupa memberi nama variabel/inisialisai baru untuk memanggil gambar tersebut, saya memberikan nama Image.
+<br> Untuk menampilkan gambar menggunakan display(Image). 
+```{r}
+Image <- readImage("C:/Users/ASUS/OneDrive/Pictures/Jalan.jpg")
+display(Image)
+```
+
+### Data image
+Untuk melihat data dari gambar menggunakan print(Image). Pada code ini akan menampilkan sifat gambar, nilai-nilai piksel, dan informasi lainnya.
+```{r}
+print(Image)
+```
+Ini adalah penjelasan dari gambar di atas.
+<br> - colormode => jenis warna gambar (warna/grayscle)
+<br> - storage.mode => jenis nilai dalam array
+<br> - dim => dimensi array (X, Y, Z)
+<br> - frames.total => jumalh saluran di setiap pixel
+<br> - frames.render => jumlah saluran yang diberikan
+
+### Histogram image
+Untuk melihat histogram dari gambar menggunakan hist(Image).
+```{r}
+hist(Image)
+```
+
+## Editing image
+Sekarang kita akan mengubah cahaya dan posisi dari gambar.
+
+### Brightness
+Untuk memanipulasi kecerahan gambar menggunakan tanda + untuk menambah intensitas cahaya pada gambar dan tanda - untuk mengurangi intensitas cahaya pada gambar.
+<<br> Gambar sebelah kanan adalah gambar yang ditambahi intensitas cahayanya dan gambar sebelah kiri adalah gambar yang dikurangi intensitas cahayanya.br> Untuk menampilkan 2 gambar menggunakan plot(Image1) dan plot (Image2). 
+```{r}
+Image1 <- Image + 0.2
+Image2 <- Image - 0.2
+par(mfrow= c(1,2))
+plot(Image1)
+plot(Image2)
+```
+
+### Adjusting contrast
+Untuk memanipulasi gambar dengan kontars menggunakan tanda * untuk mengatur kontras pada gambar.
+<br> Untuk menampilkan 2 gambar menggunakan plot(Image3) dan plot (Image4).
+<br> Gambar sebelah kanan adalah gambar dengan kontras cahaya yang dikali 0.5 dan gambar sebelah kiri adalah gambar dengan kontar cahaya yang dikali 2.
+```{r}
+Image3 <- Image * 0.5
+Image4 <- Image * 2
+par(mfrow= c(1,2))
+plot(Image3)
+plot(Image4)
+```
+
+### Gamma correction
+Koreksi gamma adalah nama dari operasi nonlinear yang digunakan untuk kode dan decode luminance atau tristimulus.
+<br> Untuk memanipulasi gambar dengan gamma menggunakan tanda ^ untuk mengatur gamma pada gambar.
+<br> Untuk menampilkan 2 gambar menggunakan plot(Image5) dan plot (Image6).
+<br> Gambar sebelah kanan adalah gambar dengan gamma sebesar 2 dan gambar sebelah kiri adalah gambar dengan gamma sebesar 0.7.
+```{r}
+Image5 <- Image ^ 2
+Image6 <- Image ^ 0.7
+par(mfrow= c(1,2))
+plot(Image5)
+plot(Image6)
+```
+
+### Cropping
+Untuk memotong array dari pixel gambar menggunakan display(Image[ukuran seberapa besar yang dipotong/crop]). Disini saya dengan ukuran 80:900, 100:600.
+```{r}
+display(Image[80:900, 100:600,])
+```
+
+### Transformation image
+Untuk merotate gambar menggunakan code yang sudah ada di EBImage Imagetr <- translate(rotate(Image, 45 (derajat gambar yang di putar)), c(50,0))
+```{r}
+Imagetr <- translate(rotate(Image, 45), c(50,0))
+display(Imagetr)
+```
+
+### Color management
+Karena array pixel memiliki tiga sumbu di dimensi, contohnya 1200 x 800 x 3. Sumbu ketiga adalah slot untuk tiga saluran: merah, hijau dan biru, atau RGB. 
+<br> Disini kita akan mengubah warna color menjadi grayscale menggunakan colormode(Image) <- Grayscale.
+<br> Untuk menampilkan gambar menggunakan display(Image).
+<br> Gambar berubah warna menjadi abu-abu.
+```{r}
+colorMode(Image) <- Grayscale
+display(Image)
+```
+
+### Data image
+<br> Untuk melihat data dari gambar menggunakan print(Image). Pada code ini akan menampilkan sifat gambar, nilai-nilai piksel, dan informasi lainnya.
+```{r}
+print(Image)
+```
+
+### Color
+Untuk mengembalikan warna gambar seperti semula menggunakan colorMode(Image) <- Color.
+<br> Untuk menampilkan gambar menggunakan display(Image).
+```{r}
+colorMode(Image) <- Color
+display(Image)
+```
+
+## Filtering
+Untuk melakukan smoothing/blurring menggunakan low-pass filter dan high-pass filter, dan median filter.
+
+### Low-pass filter
+```{r}
+flow <- makeBrush(21, shape= 'disc', step=FALSE)^2
+flow <- flow/sum(flow)
+Image.flow <- filter2(Image, flow)
+display(Image.flow)
+```
+
+### High-pass filter
+```{r}
+fHigh <- matrix(1, nc= 3, nr= 3)
+fHigh[2, 2] <- -8
+Image.fHigh <- filter2(Image, fHigh)
+display(Image.fHigh)
+```
+
+### Median filter
+Untuk menghilangkan noise pada gambar menggunakan medFLTR <- medianFilter(Image, 1.1).
+<br> Gambar sebelah kanan adalah gambar noise dan gambar sebelah kiri adalah hasil gambar yang sudah dihilangkan noisenya.
+```{r}
+Image <- readImage("C:/Users/ASUS/OneDrive/Pictures/lena.jpg")
+medFltr <- medianFilter(Image, 1.1)
+par(mfrow= c(1,2))
+plot(Image)
+plot(medFltr)
+```
+
+Hasil gambar lebih jelasnya
+```{r}
+display(medFltr)
+```
+
+# Sumber 
+Berikut adalah sumber referensi yang digunakan dalam pembuatan web ini:
+<br> 1. https://thinkstudioo.blogspot.com/2018/03/analisis-image-menggunakan-ebimage-di-r.html
+<br> 2. https://thinkstudioo.blogspot.com/2018/03/analisis-image-menggunakan-ebimage-di-r_6.html
+
+# Tentang penulis
+Saya, Firyal Nabila Zalfa
+<br> Mahasiswi Teknik Informatika 
+<br> UIN Maulana Malik Ibrahim Malang
+
+![](https://instagram.fcgk18-2.fna.fbcdn.net/v/t51.2885-15/e35/s150x150/116241180_124061159376618_5772715998974156565_n.jpg?tp=1&_nc_ht=instagram.fcgk18-2.fna.fbcdn.net&_nc_cat=106&_nc_ohc=j4sQR_Ko8f4AX9IL9Fl&oh=f00c0ac7fb8e048e01b82c92bb0da19f&oe=6077DDE4)
+
+# Ucapan terimakasih
+Saya ucapkan terimakasih kepada dosen pengampu atas bimbingannya.
+<br> Prof. Dr. Suhartono, M.Kom
+
+![](https://scontent.fcgk18-1.fna.fbcdn.net/v/t1.0-1/p200x200/101692139_10216992420151979_6304736812904231421_o.jpg?_nc_cat=101&ccb=1-3&_nc_sid=7206a8&_nc_eui2=AeFl2WNlCq3OiACD95FVhmQt_J9br-SWDTP8n1uv5JYNM7pi7RJh3o4pEVHcnUUxtoCoHZPu_IaBCprwe8tt4EVt&_nc_ohc=XeHfmeJNiFgAX_ARu19&_nc_ht=scontent.fcgk18-1.fna&tp=6&oh=e6ed473195410024d59e115b19233e8e&oe=607277E2)
